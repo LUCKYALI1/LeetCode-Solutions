@@ -1,0 +1,23 @@
+int maxCount(vector<int>& banned, int n, int maxSum) {
+        vector<int> maybe;
+        int res = 0;
+        unordered_set<int> bannedSet(banned.begin(), banned.end());
+        for (int i = 1; i <= n; i++) {
+            if (bannedSet.find(i) == bannedSet.end()) {
+                maybe.push_back(i);
+            }
+        }
+
+        int sum = 0;
+        for (int i = 0; i < maybe.size(); i++) {
+            int ans = maybe[i];
+            sum += ans;
+            if (sum <= maxSum) {
+                res++;
+            } else {
+                break;
+            }
+        }
+
+        return res;
+    }
