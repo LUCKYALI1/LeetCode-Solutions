@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<bool> isArraySpecial(vector<int>& nums, vector<vector<int>>& queries) {
+        int n = nums.size();
+        vector<bool> isAlternating(n - 1, true); // Tracks alternation between nums[i] and nums[i + 1]
+        for (int i = 0; i < n - 1; i++) {
+            if ((nums[i] % 2 == 0 && nums[i + 1] % 2 == 0) || 
+                (nums[i] % 2 != 0 && nums[i + 1] % 2 != 0)) {
+                isAlternating[i] = false;
+            }
+        }
+        vector<int> prefix(n, 0);
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] + (isAlternating[i - 1] ? 1 : 0);
+        }
+
+        vector<bool> ans;
+        for (const auto& query : queries) {
+            int s = query[0];
+            int e = query[1];
+            if (s == e || prefix[e] - prefix[s] == (e - s)) {
+                ans.push_back(true);
+            } else {
+                ans.push_back(false);
+            }
+        }
+
+        return ans;
+    }
+};
+
