@@ -1,0 +1,77 @@
+#include <queue>
+#include <vector>
+#include <algorithm>
+#include <unordered_map>
+
+class Solution {
+public:
+    int minimumOperations(TreeNode* root) {
+        if (!root) return 0;
+
+        std::queue<TreeNode*> q;
+        q.push(root);
+
+        int operations = 0;
+
+        while (!q.empty()) {
+            int size = q.size();
+            std::vector<int> levelValues;
+
+            // Collect all values at the current level
+            for (int i = 0; i < size; ++i) {
+                TreeNode* node = q.front();
+                q.pop();
+                levelValues.push_back(node->val);
+
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+            }
+
+            // Calculate minimum swaps needed to sort the level
+            operations += minSwapsToSort(levelValues);
+        }
+
+        return operations;
+    }
+
+private:
+    int minSwapsToSort(std::vector<int>& arr) {
+        int n = arr.size();
+        std::vector<std::pair<int, int>> valueIndex(n);
+        
+        // Store value and its original index
+        for (int i = 0; i < n; ++i) {
+            valueIndex[i] = {arr[i], i};
+        }
+
+        // Sort by value
+        std::sort(valueIndex.begin(), valueIndex.end());
+
+        // Count swaps to rearrange to sorted order
+        std::vector<bool> visited(n, false);
+        int swaps = 0;
+
+        for (int i = 0; i < n; ++i) {
+            // Skip if already visited or in the correct position
+            if (visited[i] || valueIndex[i].second == i) {
+                continue;
+            }
+
+            // Count the size of the cycle
+            int cycleSize = 0;
+            int j = i;
+
+            while (!visited[j]) {
+                visited[j] = true;
+                j = valueIndex[j].second;
+                cycleSize++;
+            }
+
+            if (cycleSize > 1) {
+                swaps += (cycleSize - 1);
+            }
+        }
+
+        return swaps;
+    }
+};
