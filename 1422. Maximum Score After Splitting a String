@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int maxScore(string s) {
+        int zero = 0;
+        int ans = 0;
+        for (int i = 0; i < s.size(); i++) {
+            if (s[i] == '0')
+                zero++;
+        }
+
+        string left = "";
+        string right = s;
+
+        for (int i = 0; i < s.size() - 1; i++) {
+            if (s[i] == '0' && zero > 0) {
+                left += '0';
+                right.erase(0, 1); 
+                zero--;
+            }
+            else if (s[i] == '1') {
+                left += '1';
+                right.erase(0, 1);
+            }
+
+            int leftScore =count(left.begin(), left.end(), '0');
+            int rightScore=count(right.begin(), right.end(), '1'); 
+            ans = max(ans, leftScore + rightScore);
+        }
+
+        return ans;
+    }
+};
