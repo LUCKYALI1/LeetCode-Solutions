@@ -1,0 +1,18 @@
+int missingNumber(vector<int>& nums) {
+    int size = nums.size(); // Size of the input array
+    vector<int> ans(size + 1, 0); // We need size + 1 since one number is missing
+
+    // Count occurrences of each number in nums
+    for (auto i : nums) {
+        ans[i]++;
+    }
+
+    // Find the missing number
+    for (int i = 0; i < size + 1; i++) {
+        if (ans[i] == 0) {
+            return i;
+        }
+    }
+
+    return -1; // If no missing number found (should never reach here in a valid input)
+}
