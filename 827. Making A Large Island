@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int largestIsland(vector<vector<int>>& grid) {
+        int n = grid.size();
+        unordered_map<int, int> islandSize;
+        int islandId = 2; 
+        int maxIsland = 0;
+
+        function<int(int, int, int)> dfs = [&](int r, int c, int id) {
+            if (r < 0 || c < 0 || r >= n || c >= n || grid[r][c] != 1) return 0;
+            grid[r][c] = id;
+            return 1 + dfs(r+1, c, id) + dfs(r-1, c, id) + dfs(r, c+1, id) + dfs(r, c-1, id);
+        };
+
+        for (int r = 0; r < n; ++r) {
+            for (int c = 0; c < n; ++c) {
+                if (grid[r][c] == 1) {
+                    islandSize[islandId] = dfs(r, c, islandId);
+                    maxIsland = max(maxIsland, islandSize[islandId]);
+                    islandId++;
+                }
+            }
+        }
+
+        for (int r = 0; r < n; ++r) {
+            for (int c = 0; c < n; ++c) {
+                if (grid[r][c] == 0) {
+                    unordered_set<int> neighborIslands;
+                    if (r > 0) neighborIslands.insert(grid[r-1][c]);
+                    if (r < n-1) neighborIslands.insert(grid[r+1][c]);
+                    if (c > 0) neighborIslands.insert(grid[r][c-1]);
+                    if (c < n-1) neighborIslands.insert(grid[r][c+1]);
+
+                    int newSize = 1; 
+                    for (int id : neighborIslands) {
+                        if (id > 1) newSize += islandSize[id]; 
+                    }
+                    maxIsland = max(maxIsland, newSize);
+                }
+            }
+        }
+
+        return maxIsland;
+    }
+};
