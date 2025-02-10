@@ -1,0 +1,18 @@
+class Solution {
+public:
+    string clearDigits(string s) {
+    int i = 0;
+    while (i < s.size()) {
+        if (isdigit(s[i])) {
+            if (i > 0) {
+                s.erase(s.begin() + i - 1); // Remove the closest non-digit character
+                i--; // Move back since we erased an element
+            }
+            s.erase(s.begin() + i); // Remove the digit
+        } else {
+            i++; // Move forward if no deletion happens
+        }
+    }
+    return s;
+    }
+};
