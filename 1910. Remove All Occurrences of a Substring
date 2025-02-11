@@ -1,0 +1,30 @@
+class Solution {
+public:
+    string removeOccurrences(string s, string part) {
+        int n = s.size(), m = part.size();
+        char res[n]; // Array acting as a stack`
+        int j = 0;   // Pointer for res[]
+
+        for (int i = 0; i < n; i++) {
+            res[j] = s[i]; // Push character
+            j++;
+
+            // Check if last `m` characters match `part`
+            if (j >= m) {
+                bool match = true;
+                for (int k = 0; k < m; k++) {
+                    if (res[j - m + k] != part[k]) {
+                        match = false;
+                        break;
+                    }
+                }
+                // If match found, remove `part`
+                if (match) {
+                    j -= m; // "Pop" last `m` characters
+                }
+            }
+        }
+
+        return string(res, j); // Convert final stack to string
+    }
+};
