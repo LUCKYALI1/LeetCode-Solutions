@@ -1,0 +1,25 @@
+class Solution {
+public:
+      int sumOfDigits(int n){
+        int sum = 0;
+        while(n != 0){
+            sum += n % 10;
+            n /= 10;
+        }
+        return sum;
+    }
+    int maximumSum(vector<int>& nums) {
+        unordered_map<int, int> mp; 
+        int maxi = -1; 
+        for (int num : nums) {
+            int sumDigits = sumOfDigits(num);
+            if (mp.find(sumDigits) != mp.end()) {
+                maxi = max(maxi, mp[sumDigits] + num);
+                mp[sumDigits] = max(mp[sumDigits], num); 
+            } else {
+                mp[sumDigits] = num;
+            }
+        }
+        return maxi;  
+    }
+};
