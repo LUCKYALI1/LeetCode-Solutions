@@ -1,0 +1,14 @@
+class Solution {
+public:
+    string findDifferentBinaryString(vector<string>& nums) {
+        int n = nums.size();
+        string result = "";
+        // Use Cantor's Diagonalization to construct a unique binary string
+        for (int i = 0; i < n; i++) {
+            // Flip the diagonal element
+            result += (nums[i][i] == '0') ? '1' : '0';
+        }
+
+        return result;
+    }
+};
