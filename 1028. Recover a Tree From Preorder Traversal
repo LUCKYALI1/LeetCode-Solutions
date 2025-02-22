@@ -1,0 +1,54 @@
+TreeNode* recoverFromPreorder(string traversal) {
+    stack<pair<TreeNode*, int>> st;  // Stores node and its depth
+    int i = 0, n = traversal.size();
+    
+    while (i < n) {
+        int depth = 0;
+        
+        // Count the number of dashes (depth of node)
+        while (i < n && traversal[i] == '-') {
+            depth++;
+            i++;
+        }
+        
+        // Extract the node value
+        int num = 0;
+        while (i < n && isdigit(traversal[i])) {
+            num = num * 10 + (traversal[i] - '0');
+            i++;
+        }
+        
+        TreeNode* newNode = new TreeNode(num);
+        
+        // Pop stack until we find a parent at depth - 1
+        while (!st.empty() && st.top().second >= depth) {
+            st.pop();
+        }
+        
+        // Attach to parent
+        if (!st.empty()) {
+            TreeNode* parent = st.top().first;
+            if (!parent->left) {
+                parent->left = newNode;
+            } else {
+                parent->right = newNode;
+            }
+        }
+        
+        // Push current node to stack
+        st.push({newNode, depth});
+    }
+    
+    // Root is at the bottom of the stack
+    while (st.size() > 1) st.pop();
+    
+    return st.top().first;
+}
+
+// **Helper function to print tree**
+void preorder(TreeNode* root) {
+    if (!root) return;
+    cout << root->val << " ";
+    preorder(root->left);
+    preorder(root->right);
+}
