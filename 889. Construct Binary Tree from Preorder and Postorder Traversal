@@ -1,0 +1,29 @@
+
+class Solution {
+public:
+    unordered_map<int, int> postIndexMap;
+    int preIndex = 0;
+
+    TreeNode* constructTree(vector<int>& preorder, vector<int>& postorder, int left, int right) {
+        if (preIndex >= preorder.size() || left > right) return nullptr;
+        
+        TreeNode* root = new TreeNode(preorder[preIndex++]);
+        
+        if (left == right) return root; 
+        
+        int postLeftIndex = postIndexMap[preorder[preIndex]]; 
+        
+        root->left = constructTree(preorder, postorder, left, postLeftIndex);
+        root->right = constructTree(preorder, postorder, postLeftIndex + 1, right - 1);
+        
+        return root;
+    }
+
+    TreeNode* constructFromPrePost(vector<int>& preorder, vector<int>& postorder) {
+        int n = preorder.size();
+        for (int i = 0; i < n; i++) {
+            postIndexMap[postorder[i]] = i;
+        }
+        return constructTree(preorder, postorder, 0, n - 1);
+    }
+};
