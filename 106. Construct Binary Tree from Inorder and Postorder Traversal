@@ -1,0 +1,32 @@
+class Solution {
+  public:
+    void createMapping(const vector<int>& in, map<int, int>& mapToIndex, int n) {
+        for (int i = 0; i < n; i++) {
+            mapToIndex[in[i]] = i; 
+        }
+    }
+
+    TreeNode* solve(const vector<int>& post, const vector<int>& in, int& index, 
+                    int start, int end, int n, map<int, int>& mapToIndex) {
+        if (index < 0 || start > end) {
+            return nullptr;
+        }
+
+        int element = post[index--];
+        TreeNode* root = new TreeNode(element);
+        int position = mapToIndex[element]; 
+        
+        root->right = solve(post, in, index, position + 1, end, n, mapToIndex);
+        root->left = solve(post, in, index, start, position - 1, n, mapToIndex);
+
+        return root;
+    }
+
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        int n = inorder.size();
+        int index = n - 1; // Fix: start from the last index in postorder
+        map<int, int> mapToIndex;
+        createMapping(inorder, mapToIndex, n); 
+        return solve(postorder, inorder, index, 0, n - 1, n, mapToIndex);
+    }
+};
