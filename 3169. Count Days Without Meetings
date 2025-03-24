@@ -1,0 +1,50 @@
+// class Solution {
+// public:
+//     unordered_map<int, bool>& getmeetingDays(vector<vector<int>>& meetings, int days, unordered_map<int, bool>& map) {
+//         for (auto meet : meetings) {
+//             int s = meet[0];
+//             int e = meet[1];
+
+//             for (int i = s; i <= e; i++) { 
+//                 if (i <= days) {  
+//                     map[i] = true;  
+//                 }
+//             }
+//         }
+//         return map;
+//     }
+
+//     int countDays(int days, vector<vector<int>>& meetings) {
+//         unordered_map<int, bool> map;
+//         getmeetingDays(meetings, days, map);
+//         int count = 0;
+//         for (int i = 1; i <= days; i++) {
+//             if (map.find(i) == map.end()) {
+//                 count++;  
+//             }
+//         }
+//         return count;
+//     }
+// };
+class Solution {
+public:
+    int countDays(int days, vector<vector<int>>& meetings) {
+        sort(meetings.begin(), meetings.end());
+
+        vector<vector<int>> mergedMeetings;
+        for (const auto& meeting : meetings) {
+            if (mergedMeetings.empty() || meeting[0] > mergedMeetings.back()[1]) {
+                mergedMeetings.push_back(meeting);
+            } else {
+                mergedMeetings.back()[1] = max(mergedMeetings.back()[1], meeting[1]);
+            }
+        }
+
+        int meetingDaysCount = 0;
+        for (const auto& m : mergedMeetings) {
+            meetingDaysCount += (m[1] - m[0] + 1);
+        }
+
+        return days - meetingDaysCount;
+    }
+};
