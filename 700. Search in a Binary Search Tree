@@ -1,0 +1,13 @@
+TreeNode* searchBST(TreeNode* root, int val) {
+    // base case: if root is null or value found
+    if (root == NULL || root->val == val) {
+        return root;
+    }
+
+    // if value is less, search left
+    if (val < root->val) {
+        return searchBST(root->left, val);
+    }
+    // else search right
+    return searchBST(root->right, val);
+}
