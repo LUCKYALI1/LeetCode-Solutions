@@ -1,0 +1,24 @@
+class Solution {
+public:
+   int totalFruit(vector<int>& fruits) {
+    map<int, int> map;
+    int left = 0, maxFruits = 0;
+    int k = 2; 
+    for(int right = 0; right < fruits.size(); right++) {
+        if(map.size() <= 2) {
+            map[fruits[right]]++;
+        }
+        while(map.size() > k) {
+            map[fruits[left]]--;
+            if(map[fruits[left]] == 0) {
+                map.erase(fruits[left]);
+            }
+            left++;
+        }
+        maxFruits = max(maxFruits, right - left + 1);
+    }
+
+    return maxFruits;
+}
+
+};
