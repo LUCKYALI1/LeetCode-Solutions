@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int countLessEqual(vector<vector<int>>& mat, int n, int mid) {
+        int count = 0;
+        int row = n - 1;
+        int col = 0;
+
+        while (row >= 0 && col < n) {
+            if (mat[row][col] <= mid) {
+                count += (row + 1); // All elements in current column up to this
+                                    // row are <= mid
+                col++;
+            } else {
+                row--;
+            }
+        }
+        return count;
+    }
+    int kthSmallest(vector<vector<int>>& mat, int k) {
+        int n = mat.size();
+        int low = mat[0][0], high = mat[n - 1][n - 1];
+
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            int count = countLessEqual(mat, n, mid);
+
+            if (count < k)
+                low = mid + 1;
+            else
+                high = mid;
+        }
+
+        return low;
+    }
+};
