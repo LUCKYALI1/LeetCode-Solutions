@@ -1,0 +1,40 @@
+class Solution {
+public:
+    long long countSubarrays(vector<int>& nums, long long k) {
+        // long long count = 0;
+        // int n = nums.size();
+
+        // for (int i = 0; i < n; i++) {
+        //     long long sum = 0;
+        //     for (int j = i; j < n; j++) {
+        //         sum += nums[j]; 
+        //         long long length = j - i + 1; 
+        //         if (sum * length < k) {
+        //             count++;
+        //         } else {
+        //             break; 
+        //         }
+        //     }
+        // }
+
+        // return count;
+        int n = nums.size();
+        long long count = 0;
+        long long sum = 0;
+        int left = 0;
+        for(int right  = 0 ; right < n ; right++){
+
+            sum += nums[right];
+
+            while(sum * (right - left + 1) >= k){
+                sum -= nums[left];
+                left++;
+            }
+
+            count += (right - left + 1);
+        }
+        return count;
+
+
+    }
+};
