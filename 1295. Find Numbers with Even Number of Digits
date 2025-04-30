@@ -1,0 +1,22 @@
+class Solution {
+public:
+    bool isEven(int num){
+        int count = 0;
+        while(num){
+            int ele = num % 10;
+            count++;
+            num /= 10;
+        }
+        if(count % 2 == 0) {return true;}
+        return false;
+    }
+    int findNumbers(vector<int>& nums) {
+        int count = 0;
+        for(int i = 0 ; i < nums.size() ; i++){
+            if(isEven(nums[i])){
+                count++;
+            }
+        }
+        return count;
+    }
+};
