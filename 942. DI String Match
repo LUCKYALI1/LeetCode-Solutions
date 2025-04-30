@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<int> diStringMatch(string s) {
+        // vector<int> res;
+        // vector<int> perm;
+
+        // // Fill perm with values from 0 to s.size()
+        // for (int i = 0; i <= s.size(); i++) {
+        //     perm.push_back(i);
+        // }
+
+        // int i = 0;
+        // while (i < s.size()) {
+        //     if (s[i] == 'I') {
+        //         res.push_back(perm.front()); // pick smallest
+        //         perm.erase(perm.begin());
+        //     } else if (s[i] == 'D') {
+        //         res.push_back(perm.back()); // pick largest
+        //         perm.pop_back();
+        //     }
+        //     i++;
+        // }
+
+        // // One element remains in perm
+        // res.push_back(perm.front());
+
+        // return res;
+        int low = 0, high = s.size();
+        vector<int> res;
+
+        for (char c : s) {
+            if (c == 'I') res.push_back(low++);
+            else res.push_back(high--);
+        }
+        res.push_back(low); // Final number
+        return res;
+    }
+};
