@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int minMoves(vector<int>& nums) {
+        int n = nums.size();
+        int min = INT_MAX;
+        int sum = 0;
+        for(auto i : nums){
+            if(i < min){
+                min = i;
+            }
+            sum += i;
+
+        }
+        int ans = sum - n * min;
+        return ans;
+        
+    }
+};
