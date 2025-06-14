@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int minMaxDifference(int num) {
+        string s = to_string(num);
+        
+        string maxStr = s;
+        for (char d : s) {
+            if (d != '9') {
+                for (char& c : maxStr) {
+                    if (c == d) c = '9';
+                }
+                break; // Only remap one digit
+            }
+        }
+
+        // Create min number by replacing a digit with '0'
+        string minStr = s;
+        for (char d : s) {
+            if (d != '0') {
+                for (char& c : minStr) {
+                    if (c == d) c = '0';
+                }
+                break; // Only remap one digit
+            }
+        }
+
+        int maxNum = stoi(maxStr);
+        int minNum = stoi(minStr);
+
+        return maxNum - minNum;
+    }
+};
