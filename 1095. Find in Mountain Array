@@ -1,0 +1,65 @@
+/**
+ * // This is MountainArray's API interface.
+ * // You should not implement it, or speculate about its implementation
+ * interface MountainArray {
+ *     public int get(int index);
+ *     public int length();
+ * }
+ */
+
+class Solution {
+
+    // Binary search to find peak index
+    private int peakIndexInMountainArray(MountainArray arr) {
+        int s = 0, e = arr.length() - 1;
+
+        while (s < e) {
+            int mid = s + (e - s) / 2;
+            if (arr.get(mid) < arr.get(mid + 1)) {
+                s = mid + 1;
+            } else {
+                e = mid;
+            }
+        }
+        return s;
+    }
+
+    // Order-Agnostic Binary Search
+    private int orderAgnosticBS(MountainArray arr, int target, int s, int e) {
+        boolean isAsc = arr.get(s) < arr.get(e);
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+            int midVal = arr.get(mid);
+
+            if (midVal == target) {
+                return mid;
+            }
+
+            if (isAsc) {
+                if (target < midVal) {
+                    e = mid - 1;
+                } else {
+                    s = mid + 1;
+                }
+            } else {
+                if (target > midVal) {
+                    e = mid - 1;
+                } else {
+                    s = mid + 1;
+                }
+            }
+        }
+
+        return -1;
+    }
+
+    public int findInMountainArray(int target, MountainArray arr) {
+        int peak = peakIndexInMountainArray(arr);
+        
+        int firstTry = orderAgnosticBS(arr, target, 0, peak);
+        if (firstTry != -1) return firstTry;
+        
+        return orderAgnosticBS(arr, target, peak + 1, arr.length() - 1);
+    }
+}
