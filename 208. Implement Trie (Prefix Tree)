@@ -1,0 +1,73 @@
+class Trie {
+private:
+    struct TrieNode {
+        bool isEnd;
+        TrieNode* children[26];
+
+        TrieNode() {
+            isEnd = false;
+            for (int i = 0; i < 26; i++) {
+                children[i] = nullptr;
+            }
+        }
+    };
+
+    TrieNode* root;
+
+    // Recursive helper for insert
+    void insertRec(TrieNode* node, const string& word, int index) {
+        if (index == word.length()) {
+            node->isEnd = true;
+            return;
+        }
+
+        int i = word[index] - 'a';
+        TrieNode* child;
+
+        // Present
+        if (node->children[i] != NULL) {
+            child = node->children[i];
+        }
+        // Absent
+        else {
+            child = new TrieNode(); // Constructor doesn't take char
+            node->children[i] = child;
+        }
+
+        insertRec(child, word, index + 1); // Continue inserting
+    }
+    bool searchRec(TrieNode* node, const string& word, int index) {
+        if (index == word.length()) {
+            return node->isEnd;
+        }
+
+        int i = word[index] - 'a';
+        TrieNode* child;
+
+        if (node->children[i] != NULL) {
+            child = node->children[i]; // ✅ use i, not index
+        } else {
+            return false;
+        }
+
+        return searchRec(child, word, index + 1);
+    }
+
+    // Recursive helper for startsWith
+    bool startsWithRec(TrieNode* node, const string& prefix, int index) {
+        if (!node)
+            return false;
+        if (index == prefix.length())
+            return true;
+        return startsWithRec(node->children[prefix[index] - 'a'], prefix,index + 1);
+    }
+
+public:
+    Trie() { root = new TrieNode(); }
+
+    void insert(string word) { insertRec(root, word, 0); }
+
+    bool search(string word) { return searchRec(root, word, 0); }
+
+    bool startsWith(string prefix) { return startsWithRec(root, prefix, 0); }
+};
