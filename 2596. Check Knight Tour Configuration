@@ -1,0 +1,29 @@
+class Solution {
+public:
+    bool isvalid(vector<vector<int>>& grid, int r, int c, int n, int expVal) {
+        if (r < 0 || c < 0 || r >= n || c >= n || grid[r][c] != expVal) {
+            return false;
+        }
+
+        if (expVal == n * n - 1) {
+            return true;
+        }
+
+        // 8 possible knight moves
+        if (isvalid(grid, r - 2, c + 1, n, expVal + 1)) return true;
+        if (isvalid(grid, r - 1, c + 2, n, expVal + 1)) return true;
+        if (isvalid(grid, r + 1, c + 2, n, expVal + 1)) return true;
+        if (isvalid(grid, r + 2, c + 1, n, expVal + 1)) return true;
+        if (isvalid(grid, r + 2, c - 1, n, expVal + 1)) return true;
+        if (isvalid(grid, r + 1, c - 2, n, expVal + 1)) return true;
+        if (isvalid(grid, r - 1, c - 2, n, expVal + 1)) return true;
+        if (isvalid(grid, r - 2, c - 1, n, expVal + 1)) return true;
+
+        return false;
+    }
+
+    bool checkValidGrid(vector<vector<int>>& grid) {
+        if (grid[0][0] != 0) return false; // Knight must start at (0, 0)
+        return isvalid(grid, 0, 0, grid.size(), 0);
+    }
+};
