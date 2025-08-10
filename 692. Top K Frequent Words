@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<string> topKFrequent(vector<string>& words, int k) {
+        unordered_map<string, int> freq;
+        for (auto &word : words) {
+            freq[word]++;
+        }
+        vector<pair<string, int>> arr(freq.begin(), freq.end());
+
+        sort(arr.begin(), arr.end(), [](const auto &a, const auto &b) {
+            if (a.second == b.second) 
+                return a.first < b.first; 
+            return a.second > b.second; 
+        });
+        vector<string> ans;
+        for (int i = 0; i < k && i < arr.size(); i++) {
+            ans.push_back(arr[i].first);
+        }
+
+        return ans;
+    }
+};
+
+in python3 
+class Solution:
+    def topKFrequent(self, words: List[str], k: int) -> List[str]:
+        freq = {}
+        for word in words:
+            freq[word] = freq.get(word, 0) + 1
+
+        # Sort by frequency desc, then lexicographical asc
+        sorted_words = sorted(freq, key=lambda w: (-freq[w], w))
+
+        # Return top k
+        return sorted_words[:k]
