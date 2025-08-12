@@ -1,0 +1,79 @@
+// class Solution {
+// public:
+//     void getPowerArr(vector<int> &arr, int n, int x) {
+//         int num = 1;
+//         int sqr = pow(num, x);
+//         while (sqr <= n) {
+//             arr.push_back(sqr);
+//             num++;
+//             sqr = pow(num, x);
+//         }
+//     }
+
+//     int numberOfWays(int n, int x) {
+//         vector<int> arr;
+//         getPowerArr(arr, n, x);
+
+//         int count = 0;
+
+//         // Case 1: Single number equals n
+//         for (int num : arr) {
+//             if (num == n) count++;
+//         }
+
+//         // Case 2: Two numbers sum to n (two-pointer)
+//         int left = 0, right = arr.size() - 1;
+//         while (left < right) {
+//             int sum = arr[left] + arr[right];
+//             if (sum == n) {
+//                 count++;
+//                 left++;
+//                 right--;
+//             } else if (sum < n) {
+//                 left++;
+//             } else {
+//                 right--;
+//             }
+//         }
+
+//         return count;
+//     }
+// };
+class Solution {
+public:
+    int mod = 1e9 + 7;
+
+    void getPowerArr(vector<int> &arr, int n, int x) {
+        int num = 1;
+        int p = pow(num, x);
+        while (p <= n) {
+            arr.push_back(p);
+            num++;
+            p = pow(num, x);
+        }
+    }
+
+    int solve(int idx, int target, vector<int> &arr, vector<vector<int>> &dp) {
+        if (target == 0) return 1; // found a valid combination
+        if (idx >= arr.size() || target < 0) return 0;
+
+        if (dp[idx][target] != -1) return dp[idx][target];
+
+        // Option 1: take current number (unique → move to idx+1)
+        int take = solve(idx + 1, target - arr[idx], arr, dp);
+
+        // Option 2: skip current number
+        int skip = solve(idx + 1, target, arr, dp);
+
+        return dp[idx][target] = (take + skip) % mod;
+    }
+
+    int numberOfWays(int n, int x) {
+        vector<int> arr;
+        getPowerArr(arr, n, x);
+
+        vector<vector<int>> dp(arr.size(), vector<int>(n + 1, -1));
+
+        return solve(0, n, arr, dp);
+    }
+};2787. Ways to Express an Integer as Sum of Powers
