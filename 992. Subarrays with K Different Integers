@@ -1,0 +1,53 @@
+// class Solution {
+// public:
+//     int subarraysWithKDistinct(vector<int>& nums, int k) {
+//         int n = nums.size();
+//         int count = 0;
+//         for (int i = 0; i < n; i++) {
+//             set<int> s;  
+//             for (int j = i; j < n; j++) {
+//                 s.insert(nums[j]);
+//                 if (s.size() == k) {
+//                     count++;
+//                 } else if (s.size() > k) {
+//                     break;  
+//                 }
+//             }
+//         }
+//         return count;
+//     }
+// };
+
+// ---------------------------USING TWO POINTER SLIDING WINDOW WITH HASHMAP----------------------
+class Solution {
+public:
+    int subarraysWithKDistinct(vector<int>& nums, int k) {
+        return atMost(nums, k) - atMost(nums, k - 1);
+    }
+
+private:
+    int atMost(vector<int>& nums, int k) {
+        int n = nums.size();
+        unordered_map<int, int> freq;
+        int left = 0, count = 0;
+
+        for (int right = 0; right < n; right++) {
+            if (freq[nums[right]] == 0) {
+                k--; // new distinct element
+            }
+            freq[nums[right]]++;
+
+            while (k < 0) { // too many distinct
+                freq[nums[left]]--;
+                if (freq[nums[left]] == 0) {
+                    k++;
+                }
+                left++;
+            }
+
+            count += (right - left + 1); 
+        }
+
+        return count;
+    }
+};
