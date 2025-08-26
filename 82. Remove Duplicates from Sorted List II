@@ -1,0 +1,28 @@
+#include <unordered_map>
+
+class Solution {
+public:
+    ListNode* deleteDuplicates(ListNode* head) {
+        if (!head) return nullptr;
+
+        // 1) Count frequencies
+        std::unordered_map<int,int> freq;
+        for (ListNode* cur = head; cur; cur = cur->next)
+            ++freq[cur->val];
+
+        // 2) Build result by reusing nodes with freq == 1
+        ListNode dummy(0);
+        ListNode* tail = &dummy;
+
+        for (ListNode* cur = head; cur; cur = cur->next) {
+            if (freq[cur->val] == 1) {
+                tail->next = cur;   // attach existing node
+                tail = cur;
+            }
+        }
+
+        // terminate the new list (important to avoid leftover links)
+        tail->next = nullptr;
+        return dummy.next;
+    }
+};
