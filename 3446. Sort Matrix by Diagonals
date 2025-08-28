@@ -1,0 +1,43 @@
+class Solution {
+public:
+    void fillDiagonal(vector<vector<int>>& grid, int row, int col, vector<int>& sorted, int idx) {
+        int n = grid.size();
+        if (row >= n || col >= n) return;  
+
+        grid[row][col] = sorted[idx];
+        fillDiagonal(grid, row + 1, col + 1, sorted, idx + 1); 
+    }
+
+    vector<vector<int>> sortMatrix(vector<vector<int>>& grid) {
+        int n = grid.size();
+        for (int col = 0; col < n; col++) {
+            vector<int> diag;
+            int r = 0, c = col;
+
+            while (r < n && c < n) {
+                diag.push_back(grid[r][c]);
+                r++; c++;
+            }
+
+            if (0 < col) {
+                sort(diag.begin(), diag.end()); 
+            } else { 
+                sort(diag.begin(), diag.end(), greater<int>()); 
+            }
+
+            fillDiagonal(grid, 0, col, diag, 0);
+        }
+        for (int row = 1; row < n; row++) {
+            vector<int> diag;
+            int r = row, c = 0;
+
+            while (r < n && c < n) {
+                diag.push_back(grid[r][c]);
+                r++; c++;
+            }
+            sort(diag.begin(), diag.end(), greater<int>());
+            fillDiagonal(grid, row, 0, diag, 0);
+        }
+        return grid;
+    }
+};
