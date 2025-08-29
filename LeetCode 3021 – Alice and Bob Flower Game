@@ -1,0 +1,11 @@
+class Solution {
+public:
+    long long flowerGame(int n, int m) {
+        long long oddX = (n + 1) / 2;   // number of odd x
+        long long evenX = n / 2;        // number of even x
+        long long oddY = (m + 1) / 2;   // number of odd y
+        long long evenY = m / 2;        // number of even y
+
+        return oddX * evenY + evenX * oddY;
+    }
+};
