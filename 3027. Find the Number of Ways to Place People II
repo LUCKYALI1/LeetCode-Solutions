@@ -1,0 +1,76 @@
+// class Solution {
+// public:
+//     int numberOfPairs(vector<vector<int>>& points) {
+//         int count = 0;
+//         int n = points.size();
+
+//         for (int i = 0; i < n; i++) {
+//             for (int j = 0; j < n; j++) {
+//                 if (i == j)
+//                     continue;
+
+//                 // condition: i dominates j
+//                 if (points[i][0] <= points[j][0] &&
+//                     points[j][1] <= points[i][1]) {
+//                     bool valid = true;
+
+//                     // check if some k blocks the pair
+//                     for (int k = 0; k < n; k++) {
+//                         if (k == i || k == j)
+//                             continue;
+
+//                         if (points[i][0] <= points[k][0] &&
+//                             points[k][0] <= points[j][0] &&
+//                             points[j][1] <= points[k][1] &&
+//                             points[k][1] <= points[i][1]) {
+//                             // point k lies inside/on the rectangle formed by i
+//                             // and j
+//                             valid = false;
+//                             break;
+//                         }
+//                     }
+
+//                     if (valid)
+//                         count++;
+//                 }
+//             }
+//         }
+
+//         return count;
+//     }
+// };
+
+class Solution {
+public:
+    int numberOfPairs(vector<vector<int>>& points) {
+        // Step 1: Sort by x ascending, then y descending
+        sort(points.begin(), points.end(), [](const auto& a, const auto& b) {
+            if (a[0] != b[0]) {
+                return a[0] < b[0];
+            }
+            return a[1] > b[1];
+        });
+
+        int count = 0;
+        int n = points.size();
+
+        // Step 2: Apply the optimized O(n^2) logic
+        for (int i = 0; i < n; i++) {
+            // This will be the highest y-value of a valid partner for point i
+            int max_y = -1e9 - 7; // A very small number
+
+            for (int j = i + 1; j < n; j++) {
+                // Check dominance condition for y (x is guaranteed by sort)
+                if (points[j][1] <= points[i][1]) {
+                    // Check emptiness condition
+                    if (points[j][1] > max_y) {
+                        count++;
+                        // This point sets a new, tighter lower boundary for any future valid pair
+                        max_y = points[j][1]; 
+                    }
+                }
+            }
+        }
+        return count;
+    }
+};
