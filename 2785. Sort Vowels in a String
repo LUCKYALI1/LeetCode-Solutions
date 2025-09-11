@@ -1,0 +1,27 @@
+class Solution {
+public:
+    string sortVowels(string s) {
+        // vowel lookup table
+        bool isVowel[256] = {false};
+        string v = "aeiouAEIOU";
+        for (char c : v) isVowel[c] = true;
+
+        // Step 1: collect vowels
+        vector<char> vowels;
+        for (char c : s) {
+            if (isVowel[c]) vowels.push_back(c);
+        }
+
+        // Step 2: sort vowels by ASCII
+        sort(vowels.begin(), vowels.end());
+
+        // Step 3: replace vowels in-place
+        int j = 0;
+        for (char &c : s) {
+            if (isVowel[c]) {
+                c = vowels[j++];
+            }
+        }
+        return s;
+    }
+};
