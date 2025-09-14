@@ -1,0 +1,51 @@
+class Solution {
+public:
+    bool isVowel(char c) {
+        c = tolower(c);
+        return c=='a' || c=='e' || c=='i' || c=='o' || c=='u';
+    }
+
+    string devowel(string word) {
+        for (char &c : word) {
+            if (isVowel(c)) c = '*';
+        }
+        return word;
+    }
+
+    vector<string> spellchecker(vector<string>& wordlist,
+                                vector<string>& queries) {
+        unordered_set<string> exact(wordlist.begin(), wordlist.end());
+        unordered_map<string, string> lower_map, vowel_map;
+
+        // Build maps
+        for (string w : wordlist) {
+            string lower = w;
+            transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+
+            if (!lower_map.count(lower)) lower_map[lower] = w;
+            string dv = devowel(lower);
+            if (!vowel_map.count(dv)) vowel_map[dv] = w;
+        }
+
+        vector<string> result;
+        for (string q : queries) {
+            if (exact.count(q)) {
+                result.push_back(q); // exact match
+            } else {
+                string lower = q;
+                transform(lower.begin(), lower.end(), lower.begin(), ::tolower);
+                if (lower_map.count(lower)) {
+                    result.push_back(lower_map[lower]); // case match
+                } else {
+                    string dv = devowel(lower);
+                    if (vowel_map.count(dv)) {
+                        result.push_back(vowel_map[dv]); // vowel match
+                    } else {
+                        result.push_back(""); // no match
+                    }
+                }
+            }
+        }
+        return result;
+    }
+};
