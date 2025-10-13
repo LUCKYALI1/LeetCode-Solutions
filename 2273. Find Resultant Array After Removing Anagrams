@@ -1,0 +1,23 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        if (s.size() != t.size()) return false;
+        sort(s.begin(), s.end());
+        sort(t.begin(), t.end());
+        return s == t;
+    }
+    vector<string> removeAnagrams(vector<string>& words) {
+        vector<string> ans;
+        ans.push_back(words[0]); // keep the first word
+
+        for (int i = 1; i < words.size(); i++) {
+            if (!isAnagram(words[i], words[i - 1])) {
+                ans.push_back(words[i]); // only keep if not an anagram of the previous
+            }
+        }
+        return ans;
+    }
+};
