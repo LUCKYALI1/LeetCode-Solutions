@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int findSmallestInteger(vector<int>& nums, int value) {
+        // Step 1: Make frequency map of remainders
+        unordered_map<int, int> freq;
+        for (int ele : nums) {
+            int rem = ((ele % value) + value) % value; // handle negatives
+            freq[rem]++;
+        }
+
+        // Step 2: 'bana' = next number we want to form (starting from 0)
+        int mex = 0;
+
+        // Step 3: Try to build sequence 0,1,2,...
+        while (true) {
+            int rem = mex % value;
+
+            // Step 4: Check if we can make 'bana' using current remainder
+            if (freq[rem] > 0) {
+                freq[rem]--;  // use one number from this remainder class
+                mex++;        // move to next target
+            } else {
+                break;        // can't make next number => MEX found
+            }
+        }
+
+        // Step 5: Return final 'bana' (the MEX)
+        return mex;
+    }
+};
