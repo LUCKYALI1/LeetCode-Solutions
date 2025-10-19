@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    // Rotate string right by k positions
+    string rotateRight(string s, int k) {
+        int n = s.size();
+        k %= n;
+        reverse(s.begin(), s.end());
+        reverse(s.begin(), s.begin() + k);
+        reverse(s.begin() + k, s.end());
+        return s;
+    }
+
+    // Add 'a' to all digits at odd indices (wrap around 0–9)
+    string addToOdd(string s, int a) {
+        for (int i = 1; i < s.size(); i += 2) {
+            int digit = s[i] - '0';
+            digit = (digit + a) % 10;
+            s[i] = '0' + digit;
+        }
+        return s;
+    }
+
+    string findLexSmallestString(string s, int a, int b) {
+        string ans = s;
+        queue<string> q;
+        unordered_set<string> seen;
+
+        q.push(s);
+        seen.insert(s);
+
+        while (!q.empty()) {
+            string cur = q.front();
+            q.pop();
+
+            ans = min(ans, cur);
+
+            // Apply add operation
+            string addStr = addToOdd(cur, a);
+            if (!seen.count(addStr)) {
+                seen.insert(addStr);
+                q.push(addStr);
+            }
+
+            // Apply rotate operation
+            string rotStr = rotateRight(cur, b);
+            if (!seen.count(rotStr)) {
+                seen.insert(rotStr);
+                q.push(rotStr);
+            }
+        }
+        return ans;
+    }
+};
