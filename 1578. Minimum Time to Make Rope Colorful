@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int minCost(string colors, vector<int>& neededTime) {
+        int minCost = 0;
+        int n = colors.size();
+        
+        for (int i = 1; i < n; i++) {
+            if (colors[i] == colors[i - 1]) {
+                // Remove the smaller one and keep the larger one
+                if (neededTime[i - 1] < neededTime[i]) {
+                    minCost += neededTime[i - 1];
+                } else {
+                    minCost += neededTime[i];
+                    neededTime[i] = neededTime[i - 1];  // keep the max time for future comparisons
+                }
+            }
+        }
+        
+        return minCost;
+    }
+};
