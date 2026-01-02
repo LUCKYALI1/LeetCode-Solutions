@@ -1,0 +1,42 @@
+# N-Repeated Element in Size 2N Array
+
+## Intuition
+The problem asks us to find an element that appears $N$ times in an array of size $2N$. This implies that the target element occupies exactly **50%** of the array's positions. Because the element is so dense, it is mathematically impossible for the repeated elements to be spread far apart throughout the entire array.
+
+By **Pigeonhole Principle** logic, in almost all configurations, the repeated element will appear either next to itself (distance 1) or separated by just one number (distance 2). We don't need to count the frequency of every number; we just need to find the first instance where a number repeats within a small window.
+
+## Approach
+Instead of using a Hash Map (which consumes $O(N)$ space) or sorting (which takes $O(N \log N)$ time), we can optimize based on the density of the target element:
+
+1.  **Iterate** through the array from index `0` to `size - 2`.
+2.  For every index `i`, check two conditions:
+    * Is `nums[i]` equal to the next element `nums[i+1]`?
+    * Is `nums[i]` equal to the element after the next `nums[i+2]`?
+3.  If either condition is true, `nums[i]` is the repeated element (since all other elements are unique, only the target can appear twice).
+4.  **Edge Case:** If the loop finishes without finding a match (which happens in very specific distributions like `[x, 1, 2, x]`), the answer is guaranteed to be the last element of the array.
+
+## Complexity
+- **Time complexity:** $O(N)$
+  In the worst case, we iterate through the array once. However, due to the high density of the repeated element (50%), the probability of finding the answer very early is extremely high, making the average time complexity closer to $O(1)$.
+
+- **Space complexity:** $O(1)$
+  We are not using any extra data structures like Hash Maps or frequency arrays; we only perform index comparisons.
+
+## Code Implementation
+
+### C++
+```cpp
+class Solution {
+public:
+    int repeatedNTimes(vector<int>& nums) {
+        // Iterate and check neighbors within a distance of 2
+        for(int i = 0; i < nums.size() - 2; i++) {
+            if(nums[i] == nums[i+1] || nums[i] == nums[i+2]) {
+                return nums[i];
+            }
+        }
+        
+        // Fallback for edge cases where the pattern is at the very end
+        return nums[nums.size() - 1];
+    }
+};
