@@ -1,0 +1,80 @@
+# Maximum Level Sum of a Binary Tree
+
+## Intuition
+When we look at the problem, we notice that each *level* of the binary tree has its own sum of node values.  
+The task is to find **which level has the highest total sum**.
+
+A natural way to process a tree **level by level** is a **Breadth-First Search (BFS)** using a queue.  
+So the idea is simple:
+
+- Traverse the tree level by level  
+- Compute the sum for each level  
+- Track the level that gives the maximum sum
+
+---
+
+## Approach
+1. Use a queue and push the root node.
+2. Maintain:
+   - `level` → current level number (starting from 1)
+   - `maxSum` → highest sum seen so far
+   - `maxLevel` → level index with the highest sum
+3. For each iteration of BFS:
+   - Get the number of nodes at the current level.
+   - Pop exactly that many nodes from the queue, summing their values.
+   - Push their children (if any) back into the queue.
+   - Compare the level sum with `maxSum`.  
+     If it's larger, update `maxSum` and `maxLevel`.
+4. Continue until the queue becomes empty.
+5. Return `maxLevel`.
+
+---
+
+## Complexity
+- **Time complexity:**  
+  Each node is processed exactly once → **O(n)**
+
+- **Space complexity:**  
+  At most, the queue stores one full level of nodes → **O(n)** in the worst case
+
+---
+
+## Code
+```cpp
+class Solution {
+public:
+    int maxLevelSum(TreeNode* root) {
+        if (!root) return 0;
+
+        queue<TreeNode*> q;
+        q.push(root);
+
+        int level = 1;
+        int maxLevel = 1;
+        long long maxSum = LONG_LONG_MIN;
+
+        while (!q.empty()) {
+            int size = q.size();
+            long long levelSum = 0;
+
+            for (int i = 0; i < size; ++i) {
+                TreeNode* node = q.front();
+                q.pop();
+
+                levelSum += node->val;
+
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
+            }
+
+            if (levelSum > maxSum) {
+                maxSum = levelSum;
+                maxLevel = level;
+            }
+
+            level++;
+        }
+
+        return maxLevel;
+    }
+};
