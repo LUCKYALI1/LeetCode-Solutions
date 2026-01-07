@@ -1,0 +1,218 @@
+# 🌳 Maximum Product of Splitted Binary Tree
+
+## 📌 Problem Summary
+Given the root of a binary tree, remove **exactly one edge** so that the tree is split into **two non-empty subtrees**.
+
+Each subtree has a sum of its node values.  
+Your task is to **maximize the product** of these two subtree sums.
+
+⚠️ Important:
+- The maximum product must be calculated **before applying modulo**
+- Return the result modulo **10⁹ + 7**
+
+---
+
+## 🧠 Intuition
+
+When we remove **any single edge** in a binary tree, the tree always splits into:
+- one connected **subtree**
+- and the **remaining part of the tree**
+
+If:
+- `Total` = sum of all nodes in the tree
+- `Sub` = sum of a subtree formed after cutting an edge
+
+Then the product formed by this cut is:
+
+\[
+Sub \times (Total - Sub)
+\]
+
+🔑 **Key Observation**  
+Every subtree in the tree can be treated as a potential piece to cut off.  
+So the problem reduces to:
+
+> For every subtree, compute its sum `Sub` and maximize  
+> `Sub × (Total − Sub)`
+
+---
+
+## 🔍 Why Two DFS Traversals?
+
+We need two things:
+1. The **total sum** of the entire tree
+2. The **sum of every subtree** to try all possible cuts
+
+However:
+- While computing subtree sums using DFS, the **total sum is not yet known**
+- And the product formula requires `Total − Sub`
+
+💡 Therefore, we use **two DFS passes**:
+
+| DFS Pass | Purpose |
+|--------|---------|
+| 1st DFS | Compute total sum of the tree |
+| 2nd DFS | Compute subtree sums and maximize the product |
+
+This approach is clean, safe, and easy to reason about.
+
+---
+
+## 🪜 Approach (Step-by-Step)
+
+### Step 1️⃣ — Compute Total Tree Sum
+- Traverse the tree using DFS
+- Add values of all nodes
+- Store the result as `totalSum`
+
+---
+
+### Step 2️⃣ — Compute Subtree Sums & Max Product
+- Perform a post-order DFS
+- For each node:
+  - Compute subtree sum:
+    ```
+    subTreeSum = node->val + leftSum + rightSum
+    ```
+  - Treat it as a possible cut:
+    ```
+    product = subTreeSum × (totalSum − subTreeSum)
+    ```
+  - Update the global maximum product
+
+---
+
+### Step 3️⃣ — Apply Modulo
+- Apply modulo **only once**, after finding the maximum product
+- This avoids incorrect comparisons during maximization
+
+---
+
+## ⚠️ Common Pitfalls
+- ❌ Applying modulo while comparing products
+- ❌ Using `int` instead of `long long` (overflow risk)
+- ❌ Assuming the cut must be at the root
+- ❌ Trying to do everything in one DFS
+
+---
+
+## ⏱️ Complexity Analysis
+
+- **Time Complexity:**  
+  ``` \[ O(n) \] ```
+  Each node is visited twice.
+
+- **Space Complexity:**  
+ ``` \[ O(h) \]```
+  Due to recursion stack, where `h` is tree height.
+
+---
+
+## 💻 Codes
+
+``` cpp []
+class Solution {
+public:
+    static constexpr int MOD = 1e9 + 7;
+    long long totalSum = 0;
+    long long maxProd = 0;
+
+    // First DFS: calculate total sum of the tree
+    long long getTotalSum(TreeNode* node) {
+        if (!node) return 0;
+        return node->val + getTotalSum(node->left) + getTotalSum(node->right);
+    }
+
+    // Second DFS: compute subtree sums and update max product
+    long long dfs(TreeNode* node) {
+        if (!node) return 0;
+
+        long long leftSum = dfs(node->left);
+        long long rightSum = dfs(node->right);
+
+        long long subTreeSum = node->val + leftSum + rightSum;
+
+        // consider cutting above this subtree
+        long long product = subTreeSum * (totalSum - subTreeSum);
+        maxProd = max(maxProd, product);
+
+        return subTreeSum;
+    }
+
+    int maxProduct(TreeNode* root) {
+        totalSum = getTotalSum(root); // 1st DFS
+        dfs(root);                    // 2nd DFS
+        return maxProd % MOD;         // modulo at the end
+    }
+};
+```
+``` Python []
+class Solution:
+    def __init__(self):
+        self.MOD = 10**9 + 7
+        self.totalSum = 0
+        self.maxProd = 0
+
+    # First DFS: calculate total sum of the tree
+    def getTotalSum(self, node):
+        if not node:
+            return 0
+        return node.val + self.getTotalSum(node.left) + self.getTotalSum(node.right)
+
+    # Second DFS: compute subtree sums and update max product
+    def dfs(self, node):
+        if not node:
+            return 0
+
+        leftSum = self.dfs(node.left)
+        rightSum = self.dfs(node.right)
+
+        subTreeSum = node.val + leftSum + rightSum
+
+        # consider cutting above this subtree
+        product = subTreeSum * (self.totalSum - subTreeSum)
+        self.maxProd = max(self.maxProd, product)
+
+        return subTreeSum
+
+    def maxProduct(self, root):
+        self.totalSum = self.getTotalSum(root)  # 1st pass
+        self.dfs(root)                          # 2nd pass
+        return self.maxProd % self.MOD
+```
+``` Java []
+class Solution {
+    private static final int MOD = 1_000_000_007;
+    private long totalSum = 0;
+    private long maxProd = 0;
+
+    // First DFS: calculate total sum of the tree
+    private long getTotalSum(TreeNode node) {
+        if (node == null) return 0;
+        return node.val + getTotalSum(node.left) + getTotalSum(node.right);
+    }
+
+    // Second DFS: compute subtree sums and update max product
+    private long dfs(TreeNode node) {
+        if (node == null) return 0;
+
+        long leftSum = dfs(node.left);
+        long rightSum = dfs(node.right);
+
+        long subTreeSum = node.val + leftSum + rightSum;
+
+        // consider cutting above this subtree
+        long product = subTreeSum * (totalSum - subTreeSum);
+        maxProd = Math.max(maxProd, product);
+
+        return subTreeSum;
+    }
+
+    public int maxProduct(TreeNode root) {
+        totalSum = getTotalSum(root); // 1st pass
+        dfs(root);                    // 2nd pass
+        return (int)(maxProd % MOD);  // modulo at the end
+    }
+}
+
+```
