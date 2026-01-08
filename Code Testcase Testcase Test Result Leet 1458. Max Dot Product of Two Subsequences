@@ -1,0 +1,73 @@
+# Advanced Guide: Maximum Dot Product of Two Subsequences
+
+## 1. Problem Decomposition
+The core challenge is selecting subsequences that align to maximize the sum of products. Unlike subarrays, subsequences can skip elements, creating a massive combinatorial search space ($2^n \times 2^m$).
+
+### Why Greedy Fails
+You cannot simply pick the largest positive numbers from both arrays.
+- **Example:** `nums1 = [-1, -1]`, `nums2 = [1, 1]`
+- The max element in `nums1` is `-1`. The max in `nums2` is `1`.
+- A greedy match might try to minimize the negative impact or skip entirely, but we **must** pick at least one pair.
+- **Correct strategy:** We need a global maximum defined by local include/exclude decisions.
+
+---
+
+## 2. Mathematical Recurrence Relation
+
+
+To solve this efficiently, we define the state `dp[i][j]` as the maximum dot product using suffix subarrays `nums1[i:]` and `nums2[j:]`.
+
+For any pair indices `i` (from `nums1`) and `j` (from `nums2`), we have **4 distinct possibilities**, but we condense them into a maximization formula:
+
+$$dp[i][j] = \max \begin{cases} 
+1. \quad nums1[i] \cdot nums2[j] + \max(0, dp[i+1][j+1]) & \text{(Include current pair)} \\
+2. \quad dp[i+1][j] & \text{(Skip nums1[i])} \\
+3. \quad dp[i][j+1] & \text{(Skip nums2[j])}
+\end{cases}$$
+
+### The "Restart" Logic
+Notice the term $\max(0, dp[i+1][j+1])$ in case 1.
+- If the result of the remaining subsequences (`dp[i+1][j+1]`) is **negative**, adding it to our current product `nums1[i] * nums2[j]` would decrease the total.
+- In that case, we treat the current pair `nums1[i] * nums2[j]` as the **start of a new subsequence**, effectively resetting the accumulated sum to 0 before adding the current product.
+
+---
+
+## 3. Approach 1: Top-Down DP (Memoization)
+*Good for sparse state spaces, but has recursion overhead.*
+
+### C++ Implementation
+```cpp
+class Solution {
+public:
+    int memo[501][501];
+    int n, m;
+
+    int solve(int i, int j, vector<int>& nums1, vector<int>& nums2) {
+        if (i == n || j == m) return -1e9; // Base case: impossible state
+        
+        if (memo[i][j] != -1) return memo[i][j];
+
+        // Option 1: Multiply nums1[i] and nums2[j], then potentially add future results
+        int take = nums1[i] * nums2[j] + max(0, solve(i + 1, j + 1, nums1, nums2));
+        
+        // Option 2 & 3: Skip one of the elements
+        int skip1 = solve(i + 1, j, nums1, nums2);
+        int skip2 = solve(i, j + 1, nums1, nums2);
+
+        return memo[i][j] = max({take, skip1, skip2});
+    }
+
+    int maxDotProduct(vector<int>& nums1, vector<int>& nums2) {
+        n = nums1.size();
+        m = nums2.size();
+        // Initialize memo table with -1 (assuming -1 isn't a valid answer, 
+        // effectively we'd use a visited array or a smaller sentinel in production)
+        memset(memo, -1, sizeof(memo)); 
+        
+        // Edge case: If the "real" answer is -1, memset might fail logic. 
+        // Better to use a dedicated 'visited' flag or a very small number like -2e9.
+        for(int r=0; r<n; r++) fill(memo[r], memo[r]+m, -2e9);
+        
+        return solve(0, 0, nums1, nums2);
+    }
+};
