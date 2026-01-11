@@ -1,0 +1,68 @@
+class Solution {
+private:
+    vector<int> nextSmallerElement(const vector<int>& arr, int n) {
+        stack<int> s;
+        s.push(-1);
+        vector<int> ans(n);
+        for (int i = n - 1; i >= 0; i--) {
+            int curr = arr[i];
+            while (s.top() != -1 && arr[s.top()] >= curr) {
+                s.pop();
+            }
+            ans[i] = s.top();
+            s.push(i); // push the index of the current element
+        }
+        return ans;
+    }
+
+    vector<int> prevSmallerElement(const vector<int>& arr, int n) {
+        stack<int> s;
+        s.push(-1);
+        vector<int> ans(n);
+        for (int i = 0; i < n; i++) {
+            int curr = arr[i];
+            while (s.top() != -1 && arr[s.top()] >= curr) {
+                s.pop();
+            }
+            ans[i] = s.top();
+            s.push(i); // push the index of the current element
+        }
+        return ans;
+    }
+
+    int largestRectangle(const vector<int>& heights) {
+        int n = heights.size();
+        vector<int> next = nextSmallerElement(heights, n);
+        vector<int> prev = prevSmallerElement(heights, n);
+
+        int area = 0; // Initialize with minimum value
+        for (int i = 0; i < n; i++) {
+            int l = heights[i]; // height
+            int b = next[i] == -1 ? n : next[i]; // right boundary
+            b -= prev[i] + 1; // left boundary
+
+            int newArea = l * b;
+            area = max(area, newArea);
+        }
+        return area;
+    }
+
+public:
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        if (matrix.empty() || matrix[0].empty()) return 0; // Handle empty case
+
+        int rows = matrix.size();
+        int cols = matrix[0].size();
+        vector<int> heights(cols, 0);
+        int area = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                // Update heights based on current row
+                heights[j] = (matrix[i][j] == '1') ? heights[j] + 1 : 0;
+            }
+            area = max(area, largestRectangle(heights));
+        }
+        return area;
+    }
+};
