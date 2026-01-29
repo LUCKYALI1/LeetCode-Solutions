@@ -1,0 +1,44 @@
+class Solution {
+public:
+    using ll = long long;
+    ll INF = (1LL << 25);
+    vector<ll> dijkstra(int start, vector<vector<pair<int, int>>> & graph){
+        vector<ll> dist(26, INF);
+        dist[start] = 0;
+        priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<>> pq;
+        pq.push({0, start});
+        while (!pq.empty()){
+            auto [d, u] = pq.top();
+            pq.pop();
+            if (d > dist[u])
+                continue;
+            for (auto &[v, w] : graph[u]){
+                ll nd = d + w;
+                if (nd < dist[v]){
+                    dist[v] = nd;
+                    pq.push({nd, v});
+                }
+            }
+        }
+        return dist;
+    }
+    long long minimumCost(string source, string target, vector<char>& original, vector<char>& changed, vector<int>& cost) {
+        vector<vector<pair<int, int>>> graph(26);
+        for (int i = 0; i < original.size(); i++){
+            graph[original[i] - 'a'].push_back({changed[i] - 'a', cost[i]});
+        }
+        vector<vector<ll>> compute(26);
+        for (int i = 0; i < 26; i++){
+            compute[i] = dijkstra(i, graph);
+        }
+        ll total = 0;
+        for (int i = 0; i < source.size(); i++){
+            int s = source[i] - 'a';
+            int t = target[i] - 'a';
+            if (compute[s][t] >= INF)
+                return -1;
+            total += compute[s][t];
+        }
+        return total;
+    }
+};
