@@ -1,0 +1,128 @@
+# 🧠 Intuition
+
+We are given a **sorted array of characters** and a `target` character 🎯.  
+Our goal is to find:
+
+👉 **The smallest character that is strictly greater than `target`**
+
+If no such character exists, we must **wrap around 🔁** and return the **first character** of the array.
+
+---
+
+### 💭 First Thought
+
+The most natural idea is:
+- Traverse the array from left ➡️ right
+- Return the **first character greater than `target`**
+
+This gives us a straightforward **O(n)** solution.
+
+But wait… ⏳  
+The array is **sorted** 📈 — which means we can do **much better** using **Binary Search**!
+
+---
+
+# 🚀 Approach
+
+## 🔹 Approach 1: Linear Search (O(n))
+
+### 💡 Idea
+
+- Loop through each character
+- As soon as you find `letters[i] > target` → return it ✅
+- If the loop ends and nothing is found → **wrap around 🔁** and return `letters[0]`
+
+---
+
+### 🔍 Why This Works
+
+- The array is sorted, so the **first valid character** is also the **smallest valid character**
+- The wrap-around case is explicitly mentioned in the problem
+
+---
+
+### ⚠️ Limitation
+
+- Worst case: you scan the entire array 😕
+- Time Complexity: **O(n)**
+
+---
+
+## 🔹 Approach 2: Binary Search (Optimized 🔥)
+
+### 🧩 Key Insight
+
+We are **not** searching for `target` itself.  
+We are searching for:
+
+> 🟢 **The first character that is greater than `target`**
+
+This is a **classic boundary / lower-bound style binary search** problem.
+
+---
+
+### 🛠️ Binary Search – Step by Step
+
+1️⃣ Initialize two pointers  
+- `s` → start of array  
+- `e` → end of array  
+
+2️⃣ Keep a variable `ans`  
+- Initialize it with `letters[0]`  
+- This automatically handles the **wrap-around 🔁 case**
+
+3️⃣ While `s <= e`  
+- Calculate `mid` 🧮  
+- If `letters[mid] > target`:
+  - Store it as a **possible answer** ✅
+  - Move left (`e = mid - 1`) to find a **smaller valid character**
+- Else:
+  - Move right (`s = mid + 1`)
+
+4️⃣ When the loop ends  
+- `ans` contains the **correct answer**
+- If nothing was greater than `target`, `ans` remains `letters[0]`
+
+---
+
+### 🎯 Why This Is Correct
+
+- Binary search ensures we find the **leftmost valid character**
+- Initializing `ans` handles the **circular (wrap-around) behavior**
+- Fully utilizes the **sorted property** of the array 📈
+
+---
+
+# ⏱️ Complexity
+
+- **Time Complexity**
+  - Linear Search: 🐢 **O(n)**
+  - Binary Search: ⚡ **O(log n)**
+
+- **Space Complexity**
+  - 🧠 **O(1)** (constant extra space)
+
+---
+
+# 💻 Code
+
+```java
+class Solution {
+    public char nextGreatestLetter(char[] letters, char target) {
+        int s = 0, e = letters.length - 1;
+        char ans = letters[0];  // 🔁 default wrap-around value
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            if (letters[mid] > target) {
+                ans = letters[mid];  // ✅ possible answer
+                e = mid - 1;         // 🔍 search left for smaller valid char
+            } else {
+                s = mid + 1;         // ➡️ move right
+            }
+        }
+
+        return ans;
+    }
+}
