@@ -1,0 +1,212 @@
+# 🧠 Minimum Removals to Make Array Balanced
+
+## 📌 Problem Summary
+
+You are given an integer array `nums` and an integer `k`.
+
+An array is considered **balanced** if:
+
+max_element ≤ k × min_element
+
+
+You may remove **any number of elements** from the array, but the array **must not be empty**.
+
+Your task is to return the **minimum number of elements to remove** so that the remaining array is balanced.
+
+> **Note:**  
+> An array of size `1` is always balanced.
+
+---
+
+## 💡 Intuition
+
+At first glance, the problem looks like a simple **minimum–maximum comparison** problem.  
+However, removing elements greedily (for example, always removing the maximum when the condition fails) does **not** guarantee an optimal solution.
+
+### Why naive ideas fail
+- Removing only the maximum can lead to unnecessary deletions
+- Sometimes removing the minimum or selecting a middle range gives a larger valid array
+- The condition depends on the **global minimum and maximum**, not on individual pairs
+
+### Key Insight
+Instead of deciding **which elements to remove**, we should decide:
+
+> **What is the largest subset we can keep that is already balanced?**
+
+Once we know the size of the largest balanced subarray:
+
+minimum removals = total elements − size of largest balanced subarray
+
+
+---
+
+## 🛠️ Approach (Sorting + Sliding Window)
+
+### Step 1: Sort the array
+Sorting allows us to:
+- Treat the leftmost element of a window as the **minimum**
+- Treat the rightmost element as the **maximum**
+
+> This makes the balanced condition easy to check.
+
+---
+
+### Step 2: Apply Sliding Window (Two Pointers)
+
+> We maintain a window `[left … right]` such that: 
+> nums[right] ≤ k × nums[left]
+
+
+Procedure:
+1. Initialize two pointers `left = 0`, `right = 0`
+2. Expand the window by moving `right`
+3. If the condition breaks, move `left` forward until it becomes valid again
+4. Track the **maximum window size** that satisfies the condition
+
+---
+
+### Step 3: Compute the Answer
+
+> minimum removals = n − maxWindowSize
+
+
+---
+
+## 🧪 Dry Run Example
+
+### Input
+- nums = [1, 2, 3, 10]
+- k = 3
+
+
+### After Sorting
+> [1, 2, 3, 10]
+
+
+### Sliding Window Execution
+
+| Left | Right | Window        | Condition Check          | Valid | Window Size |
+|-----|------|---------------|--------------------------|-------|-------------|
+| 0   | 0    | [1]           | 1 ≤ 3×1 → ✅             | Yes   | 1 |
+| 0   | 1    | [1, 2]        | 2 ≤ 3×1 → ✅             | Yes   | 2 |
+| 0   | 2    | [1, 2, 3]     | 3 ≤ 3×1 → ✅             | Yes   | 3 |
+| 0   | 3    | [1, 2, 3,10]  | 10 ≤ 3×1 → ❌            | No    | — |
+| 1   | 3    | [2, 3, 10]    | 10 ≤ 3×2 → ❌            | No    | — |
+| 2   | 3    | [3, 10]       | 10 ≤ 3×3 → ❌            | No    | — |
+| 3   | 3    | [10]          | 10 ≤ 3×10 → ✅           | Yes   | 1 |
+
+✔️ **Maximum balanced window size = 3**
+
+---
+
+### Final Result
+minimum removals = 4 − 3 = 1
+
+---
+
+## ⚠️ Edge Cases
+
+- Array with one element → always balanced
+- All elements equal → already balanced
+- Large values → use `long long` to avoid overflow
+
+---
+
+## ⏱️ Complexity Analysis
+
+### Time Complexity
+- Sorting: `O(n log n)`
+- Sliding window traversal: `O(n)`
+
+**Total Time Complexity:**
+O(n log n)
+
+
+---
+
+### Space Complexity
+- No extra data structures used (in-place sorting)
+
+**Space Complexity:**
+O(1)
+
+
+---
+
+## 💻 Implementations
+
+``` cpp []
+class Solution {
+public:
+    int minRemoval(vector<int>& nums, int k) {
+        sort(nums.begin(), nums.end());
+
+        int n = nums.size();
+        int left = 0;
+        int maxWindow = 1;
+
+        for (int right = 0; right < n; right++) {
+            while ((long long)nums[right] > (long long)k * nums[left]) {
+                left++;
+            }
+            maxWindow = max(maxWindow, right - left + 1);
+        }
+
+        return n - maxWindow;
+    }
+};
+```
+``` Python []
+    class Solution:
+    def minRemoval(self, nums: List[int], k: int) -> int:
+        nums.sort()
+
+        left = 0
+        max_window = 1
+        n = len(nums)
+
+        for right in range(n):
+            while nums[right] > k * nums[left]:
+                left += 1
+            max_window = max(max_window, right - left + 1)
+
+        return n - max_window
+```
+``` Java []
+class Solution {
+    public int minRemoval(int[] nums, int k) {
+        Arrays.sort(nums);
+
+        int n = nums.length;
+        int left = 0;
+        int maxWindow = 1;
+
+        for (int right = 0; right < n; right++) {
+            while ((long) nums[right] > (long) k * nums[left]) {
+                left++;
+            }
+            maxWindow = Math.max(maxWindow, right - left + 1);
+        }
+
+        return n - maxWindow;
+    }
+}
+```
+``` Javascript []
+var minRemoval = function(nums, k) {
+    nums.sort((a, b) => a - b);
+
+    let left = 0;
+    let maxWindow = 1;
+    const n = nums.length;
+
+    for (let right = 0; right < n; right++) {
+        while (nums[right] > k * nums[left]) {
+            left++;
+        }
+        maxWindow = Math.max(maxWindow, right - left + 1);
+    }
+
+    return n - maxWindow;
+};
+```
