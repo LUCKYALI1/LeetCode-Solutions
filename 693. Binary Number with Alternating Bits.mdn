@@ -1,0 +1,43 @@
+# Intuition
+The core problem is to identify if a number's binary form oscillates between `0` and `1` (e.g., `101010`). My first thought was that while bitwise operations are standard for binary, converting the number into a **string** makes the "alternating" property a simple visual check. In string form, we just need to ensure that no two adjacent characters are the same.
+
+# Approach
+1.  **Binary Serialization**: We use `std::bitset<32>(n)` to generate the full 32-bit binary representation of the integer. This is then converted into a string `s`.
+2.  **Normalization (Trimming)**: A 32-bit integer like `5` (binary `101`) will have 29 leading zeros in a `bitset`. We use `s.find('1')` to locate the actual start of the number. By taking a `substr` from that index, we isolate the meaningful bits.
+3.  **Linear Parity Check**: We iterate through the string starting from the second index ($i = 1$). For each position, we compare the current bit `s[i]` with the previous bit `s[i-1]`.
+4.  **Early Exit**: If we ever find that `s[i] == s[i-1]`, the alternating pattern is broken, and we immediately return `false`.
+5.  **Completion**: If the loop finishes without finding any identical neighbors, the number is confirmed to have alternating bits.
+
+
+
+# Complexity
+- **Time complexity**: $O(1)$
+  > Since the input is a 32-bit integer, the `bitset` and the resulting string always have a fixed maximum length of 32. The loop runs at most 31 times, making the execution time constant regardless of the value of $n$.
+
+- **Space complexity**: $O(1)$
+  > We allocate a fixed amount of space for a 32-character string and the bitset object. This space does not scale with the input size.
+
+# Code
+```cpp []
+class Solution {
+public:
+    bool hasAlternatingBits(int n) {
+        // Step 1: Convert to a fixed-width binary string
+        bitset<32> bits(n);
+        string s = bits.to_string();
+
+        // Step 2: Remove leading zeros to get the actual binary sequence
+        int start = s.find('1');
+        if (start == string::npos) return true; // Case for n = 0
+        s = s.substr(start);
+
+        // Step 3: Check if any adjacent bits are identical
+        for (int i = 1; i < s.size(); i++) {
+            if (s[i] == s[i - 1]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+};
