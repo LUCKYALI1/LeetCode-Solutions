@@ -1,0 +1,37 @@
+# from typing import List
+
+# class Solution:
+#     def findMaxAverage(self, nums: List[int], k: int) -> float:
+#         left = 0
+#         max_avg = float('-inf')
+#         runningSum = 0
+
+#         for right in range(len(nums)):
+#             runningSum += nums[right]
+
+#             if right >= k - 1:
+#                 # Direct average calculate karke max update karo
+#                 current_avg = runningSum / k
+#                 max_avg = max(max_avg, current_avg)
+
+#                 runningSum -= nums[left]
+#                 left += 1
+
+#         return max_avg
+
+from typing import List
+
+
+class Solution:
+    def findMaxAverage(self, nums: List[int], k: int) -> float:
+
+        runningSum = sum(nums[:k])
+        maxAvg = runningSum / k
+
+        for right in range(k, len(nums)):
+            runningSum += nums[right] - nums[right - k]
+
+            currentAvg = runningSum / k
+            maxAvg = max(maxAvg, currentAvg)
+
+        return maxAvg
