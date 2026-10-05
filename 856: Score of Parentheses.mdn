@@ -1,0 +1,387 @@
+# 🧮 LeetCode 856 — Score of Parentheses
+
+> **Difficulty:** Medium  
+> **Topic:** String, Stack, Depth Tracking  
+> **Language:** C++ | Python | JavaScript
+
+## 📌 Problem
+
+Given a balanced parentheses string `s`, return the **score** of the string.
+
+The score follows these rules:
+
+- `()` has a score of `1`.
+- `AB` has a score of `A + B`.
+- `(A)` has a score of `2 * A`.
+
+### Examples
+
+| Input | Output | Explanation |
+|---|---:|---|
+| `()` | `1` | `()` → `1` |
+| `(())` | `2` | `2 × score(())` → `2 × 1` |
+| `()()` | `2` | `1 + 1 = 2` |
+| `(()())` | `4` | `2 × (1 + 1) = 4` |
+
+---
+
+# 💡 Intuition
+
+The key observation is that every time we find a **direct `()` pair**, it contributes a score based on its nesting depth.
+
+A standalone:
+
+```text
+()
+```
+
+has score:
+
+```text
+1
+```
+
+If the same `()` is inside one pair:
+
+```text
+(())
+```
+
+its score becomes:
+
+```text
+1 × 2 = 2
+```
+
+Inside two pairs:
+
+```text
+((()))
+```
+
+the innermost `()` contributes:
+
+```text
+1 × 2 × 2 = 4
+```
+
+Therefore, when we encounter a `)`:
+
+1. Decrease the current `depth`.
+2. Check whether the previous character was `(`.
+3. If `s[i - 1] == '('`, we found a direct `()`.
+4. Add `2^depth` to the answer.
+
+The important point is that **`depth` is decreased before calculating the score**, because after closing `)`, `depth` represents the number of pairs surrounding the `()`.
+
+---
+
+# 🚀 Approach
+
+We can solve the problem using only:
+
+- `depth` → current nesting depth
+- `score` → final answer
+
+No stack is required.
+
+### Step 1 — When we see `(`
+
+Increase the depth:
+
+```cpp
+depth++;
+```
+
+### Step 2 — When we see `)`
+
+First decrease the depth:
+
+```cpp
+depth--;
+```
+
+### Step 3 — Detect `()`
+
+If the previous character is `(`:
+
+```cpp
+if (s[i - 1] == '(')
+```
+
+then the current pair is exactly:
+
+```text
+()
+```
+
+Its base score is `1`.
+
+Because it is nested inside `depth` pairs, its contribution is:
+
+```text
+2^depth
+```
+
+So:
+
+```cpp
+score += pow(2, depth);
+```
+
+### Why does this work?
+
+Consider:
+
+```text
+((()))
+```
+
+When the innermost `)` is processed:
+
+```text
+( ( ( ) ) )
+      ↑
+```
+
+Before closing:
+
+```text
+depth = 3
+```
+
+After:
+
+```cpp
+depth--;
+```
+
+we have:
+
+```text
+depth = 2
+```
+
+The `()` is inside two outer pairs, so:
+
+```text
+2^2 = 4
+```
+
+Therefore:
+
+```text
+score = 4
+```
+
+---
+
+# 🔍 Dry Run
+
+Let's dry run:
+
+```text
+s = "(()())"
+```
+
+Initial state:
+
+```text
+depth = 0
+score = 0
+```
+
+| i | char | Action | depth | score |
+|---:|:---:|---|---:|---:|
+| 0 | `(` | `depth++` | 1 | 0 |
+| 1 | `(` | `depth++` | 2 | 0 |
+| 2 | `)` | `depth--`, found `()` → `2^1` | 1 | 2 |
+| 3 | `(` | `depth++` | 2 | 2 |
+| 4 | `)` | `depth--`, found `()` → `2^1` | 1 | 4 |
+| 5 | `)` | `depth--`, previous is `)` | 0 | 4 |
+
+### Final Answer
+
+```text
+4
+```
+
+Mathematically:
+
+```text
+(()())
+= 2 × (() + ())
+= 2 × (1 + 1)
+= 4
+```
+
+---
+
+# 🧠 Important Condition
+
+This condition:
+
+```cpp
+if (s[i - 1] == '(')
+```
+
+checks whether we have just completed a **primitive `()`**.
+
+For example:
+
+```text
+()
+↑
+```
+
+Previous character is `(` → add score.
+
+But for:
+
+```text
+(())
+   ↑
+```
+
+the outer `)` has a previous character of `)`, not `(`.
+
+Therefore, we don't add another score.
+
+This prevents double-counting.
+
+---
+
+# 💻 Solution
+``` cpp []
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    int scoreOfParentheses(string s) {
+        int depth = 0;
+        int score = 0;
+
+        for (int i = 0; i < s.size(); i++) {
+
+            if (s[i] == '(') {
+                depth++;
+            }
+            else {
+                depth--;
+
+                // Found a direct "()"
+                if (s[i - 1] == '(') {
+                    score += pow(2, depth);
+                }
+            }
+        }
+
+        return score;
+    }
+};
+```
+``` python []
+class Solution:
+    def scoreOfParentheses(self, s: str) -> int:
+        depth = 0
+        score = 0
+
+        for i in range(len(s)):
+
+            if s[i] == '(':
+                depth += 1
+
+            else:
+                depth -= 1
+
+                # Found a direct "()"
+                if s[i - 1] == '(':
+                    score += 2 ** depth
+
+        return score
+```
+``` javascript []
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var scoreOfParentheses = function(s) {
+    let depth = 0;
+    let score = 0;
+
+    for (let i = 0; i < s.length; i++) {
+
+        if (s[i] === '(') {
+            depth++;
+        } else {
+            depth--;
+
+            // Found a direct "()"
+            if (s[i - 1] === '(') {
+                score += 2 ** depth;
+            }
+        }
+    }
+
+    return score;
+};
+```
+
+---
+
+# 📊 Complexity
+
+Let `n` be the length of the string.
+
+### Time Complexity
+
+We traverse the string exactly once:
+
+```text
+O(n)
+```
+
+### Space Complexity
+
+We only use two integer variables:
+
+```text
+depth
+score
+```
+
+Therefore:
+
+```text
+O(1)
+```
+
+---
+
+# 🔑 Key Takeaway
+
+The entire solution is based on one observation:
+
+> **Every direct `()` contributes `2^depth`, where `depth` is the number of surrounding parentheses after closing the pair.**
+
+So instead of using a stack to calculate nested scores, we can track only the current depth.
+
+```text
+()       → 2^0 = 1
+(())     → 2^1 = 2
+((()))   → 2^2 = 4
+()()     → 1 + 1 = 2
+```
+
+This turns the problem into a simple **one-pass depth-tracking solution**.
+
+---
+
+# 🏷️ LeetCode Post Title
+
+**LeetCode 856 — Score of Parentheses | O(n) Time & O(1) Space | C++, Python & JavaScript**
+
+### Hashtags
+
+`#LeetCode #LeetCode856 #ScoreOfParentheses #DSA #DataStructures #Algorithms #Cpp #Python #JavaScript #CodingInterview #ProblemSolving #100DaysOfCode #CodingJourney #SoftwareEngineering`
